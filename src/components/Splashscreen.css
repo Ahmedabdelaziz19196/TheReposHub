@@ -1,0 +1,200 @@
+.theScreen {
+    height: 100vh;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+.theball {
+    width: 1px;
+    height: 1px;
+    border-radius: 50%;
+    position: fixed;
+    animation: scale 1.5s 3.2s forwards;
+    opacity: 0;
+}
+@media (min-width: 769px) {
+}
+.logo {
+    z-index: 999;
+    animation: fadeIn 1.5s forwards, moveLeft 0.5s 1.5s forwards,
+        fadeOut 1s 4.7s forwards;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.logo .thelogo {
+    z-index: 999;
+    width: 150px;
+    height: 150px;
+    position: relative;
+}
+
+.logo .title {
+    font-weight: bold;
+    font-size: 5rem;
+    /* color: var(--main-dark-background); */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.theScreen[data-theme="dark"] {
+    --text-color: var(--main-light-background);
+}
+
+.theScreen[data-theme="light"] {
+    --text-color: var(--main-dark-background);
+}
+@keyframes changeColor {
+    100% {
+        color: var(--text-color);
+    }
+}
+
+.logo .R {
+    animation: RmoveRight 0.1s 2.2s forwards, changeColor 0.1s 3.2s forwards;
+}
+@keyframes RmoveRight {
+    30% {
+        left: 220px;
+    }
+    100% {
+        left: 200px;
+    }
+}
+
+.logo .e {
+    animation: emoveRight 0.1s 2.5s forwards, changeColor 0.1s 3.2s forwards;
+}
+@keyframes emoveRight {
+    30% {
+        left: 265px;
+    }
+    100% {
+        left: 245px;
+    }
+}
+
+.logo .p {
+    animation: pmoveRight 0.1s 2.6s forwards, changeColor 0.1s 3.2s forwards;
+}
+@keyframes pmoveRight {
+    30% {
+        left: 310px;
+    }
+    100% {
+        left: 290px;
+    }
+}
+.logo .o {
+    animation: omoveRight 0.1s 2.7s forwards, changeColor 0.1s 3.2s forwards;
+}
+@keyframes omoveRight {
+    30% {
+        left: 355px;
+    }
+    100% {
+        left: 335px;
+    }
+}
+.logo .s {
+    animation: smoveRight 0.1s 2.8s forwards, changeColor 0.1s 3.2s forwards;
+}
+@keyframes smoveRight {
+    30% {
+        left: 400px;
+    }
+    100% {
+        left: 380px;
+    }
+}
+.logo .H {
+    animation: HmoveRight 0.1s 2.9s forwards, changeColor 0.1s 3.2s forwards;
+}
+@keyframes HmoveRight {
+    30% {
+        left: 445px;
+    }
+    100% {
+        left: 425px;
+    }
+}
+.logo .u {
+    animation: umoveRight 0.1s 3s forwards, changeColor 0.1s 3.2s forwards;
+}
+@keyframes umoveRight {
+    30% {
+        left: 490px;
+    }
+    100% {
+        left: 470px;
+    }
+}
+.logo .b {
+    animation: bmoveRight 0.1s 3.1s forwards, changeColor 0.1s 3.2s forwards;
+}
+@keyframes bmoveRight {
+    30% {
+        left: 535px;
+    }
+    100% {
+        left: 515px;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes moveLeft {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-178px);
+    }
+}
+@keyframes scale {
+    0% {
+        opacity: 0;
+    }
+    1% {
+        transform: scale(0);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(2400);
+        opacity: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .logo {
+        display: none;
+    }
+    .mobile-title {
+        font-size: 50px;
+        animation: fadeIn 2s forwards, changeColor 0.1s 3.2s forwards,
+            fadeOut 1s 4.7s forwards;
+    }
+}
+@media (min-width: 769px) {
+    .mobile-title {
+        display: none;
+    }
+}

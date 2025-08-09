@@ -1,0 +1,134 @@
+@media (max-width: 768px) {
+    .the-nav-bar {
+        flex-direction: column;
+    }
+    .the-list {
+        margin-bottom: 20px;
+    }
+}
+
+.the-list {
+    position: relative;
+    overflow: hidden;
+    padding: 0 10px 10px 10px;
+}
+.the-list::before {
+    content: "";
+    transition: 0.2s;
+    position: absolute;
+    height: 2px;
+    width: 120%;
+    bottom: 0px;
+    left: -200%;
+    background: var(--color-theme);
+    box-shadow: 0 -5px 10px var(--color-theme), 0 5px 10px var(--color-theme);
+}
+.the-list:hover::before {
+    left: 0;
+}
+
+.the-list.active::before {
+    content: "";
+    transition: 0.2s;
+    position: absolute;
+    height: 2px;
+    width: 120%;
+    bottom: 0px;
+    left: 0;
+    background: var(--color-theme);
+    box-shadow: 0 -5px 10px var(--color-theme), 0 5px 10px var(--color-theme);
+}
+
+.content-selection {
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px;
+    position: relative;
+    border-bottom: 2px solid var(--color-theme);
+}
+.content-selection:focus {
+    outline: none;
+}
+.content-selection option:hover {
+    background-color: red !important;
+    color: white;
+}
+
+.format-icon {
+    position: relative;
+    cursor: pointer;
+    width: fit-content;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.5s;
+    left: 0px;
+}
+.format-icon::before {
+    content: "";
+    position: absolute;
+    height: 30px;
+    width: 30px;
+    border-radius: 50%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+    transition: 0.5s;
+    opacity: 0;
+}
+
+.format-icon:hover::before {
+    background-color: var(--color-theme);
+    opacity: 0.5;
+}
+
+.format-number {
+    position: absolute;
+    top: 10%;
+    right: 140px;
+    height: 10px;
+    transition: 0.2s;
+    opacity: 0;
+}
+.format {
+    overflow: hidden;
+}
+.format.show {
+    overflow: visible;
+}
+.format.show .format-number {
+    right: 70px;
+    opacity: 1;
+}
+
+.filter {
+    position: relative;
+    cursor: pointer;
+    width: fit-content;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.filter::before {
+    content: "";
+    position: absolute;
+    height: 30px;
+    width: 30px;
+    border-radius: 50%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+    transition: 0.5s;
+    opacity: 0;
+}
+
+.filter:hover::before {
+    background-color: var(--color-theme);
+    opacity: 0.5;
+}
