@@ -10,6 +10,8 @@ import axios from "axios";
 import HnadleFilterForms from "../Context/HandleSearchedDate";
 import { subWeeks, subMonths, format } from "date-fns";
 import { debounce } from "lodash";
+import Loading from "./Loading";
+import Error from "./Error";
 
 export default function MainPage() {
     const { darkTheme } = useContext(DarkAndLightTheme);
@@ -26,6 +28,9 @@ export default function MainPage() {
         sorting: "",
     });
     const [filterType, setFilterType] = useState("Explore");
+    const [isLoading, setIsLoading] = useState(true);
+    const [isError, setIsError] = useState(false);
+
     const today = new Date();
     //Set Creating Date
     let repoCreationDate = "";
@@ -61,7 +66,6 @@ export default function MainPage() {
         default:
             break;
     }
-
     //Set Update Date
 
     function handleSreachBar() {
@@ -82,6 +86,8 @@ export default function MainPage() {
 
     // Request Data From GitHub API
     useEffect(() => {
+        setIsLoading(true);
+
         const source = axios.CancelToken.source();
 
         const fetchData = debounce(() => {
@@ -130,31 +136,24 @@ export default function MainPage() {
                 .then((response) => {
                     setResponsedDate(response.data.items);
                     setTotalResposedDate(response.data.total_count);
+                    setIsLoading(false);
                 })
-                .catch((error) => {
-                    if (axios.isCancel(error)) {
-                        console.log("Request canceled:", error.message);
-                    } else {
-                        console.error("Error fetching data:", error);
-                        if (error.response && error.response.status === 403) {
-                            console.error(
-                                "Rate limit exceeded. Check your GitHub token or try again later."
-                            );
-                        }
-                    }
+                .catch(() => {
+                    setIsLoading(false);
+                    setIsError(true);
                 });
 
             window.scrollTo({
                 top: 0,
                 behavior: "smooth",
             });
-        }, 500); // تأخير 500 مللي ثانية
+        }, 50);
 
         fetchData();
 
         return () => {
-            fetchData.cancel(); // إلغاء الطلبات المؤجلة
-            source.cancel("Operation canceled by the user.");
+            fetchData.cancel();
+            source.cancel();
         };
     }, [
         pageNumber,
@@ -163,7 +162,9 @@ export default function MainPage() {
         repoCreationDate,
         repoUpdateDate,
         filterType,
+        isError,
     ]);
+    // Request Data From GitHub API
 
     return (
         <HnadleFilterForms.Provider
@@ -199,33 +200,60 @@ export default function MainPage() {
                             zIndex: "1000",
                         }}
                     />
+
                     <Container
                         maxWidth="md"
                         className="main-page"
-                        sx={{ height: "calc(100% - 58px)" }}
+                        sx={{
+                            height: "calc(100% - 58px)",
+                            position: "relative",
+                        }}
                         onClick={setSearchBarOffMobile}
                     >
+                        {isLoading ? (
+                            <div
+                                style={{
+                                    position: "fixed    ",
+                                    top: "0px",
+                                    left: "0px",
+                                    width: "100%",
+                                }}
+                            >
+                                <Loading />
+                            </div>
+                        ) : (
+                            ""
+                        )}
+
                         <NavBar
                             contentPerPage={contentPerPage}
                             setContentNumberPerPage={setContentNumberPerPage}
                             setFilterType={setFilterType}
                         />
-                        <div>
-                            {responsedDate.map((_, index) => (
-                                <Card
-                                    key={index}
-                                    responsedDate={responsedDate}
-                                    index={index}
-                                />
-                            ))}
-                        </div>
+                        {isError ? (
+                            <div style={{ height: "80vh" }}>
+                                <Error />
+                            </div>
+                        ) : (
+                            <>
+                                <div>
+                                    {responsedDate.map((_, index) => (
+                                        <Card
+                                            key={index}
+                                            responsedDate={responsedDate}
+                                            index={index}
+                                        />
+                                    ))}
+                                </div>
 
-                        <ThePagination
-                            handlePageNumber={handlePageNumber}
-                            pageNumber={pageNumber}
-                            total={totalResposedDate}
-                            contentPerPage={+contentPerPage}
-                        />
+                                <ThePagination
+                                    handlePageNumber={handlePageNumber}
+                                    pageNumber={pageNumber}
+                                    total={totalResposedDate}
+                                    contentPerPage={+contentPerPage}
+                                />
+                            </>
+                        )}
                     </Container>
                 </div>
             </>
