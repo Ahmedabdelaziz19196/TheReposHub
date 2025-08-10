@@ -1,7 +1,5 @@
 import * as React from "react";
-// import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
-// import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import DarkAndLightTheme from "../Context/DarkAndLight";
@@ -10,13 +8,6 @@ import FilterInput from "./FilterInput";
 
 export default function FilterForm({ opne, closeForm, setActiveTopic }) {
     const { darkTheme } = useContext(DarkAndLightTheme);
-    // const [filteredData, setFilteredData] = useState({
-    //     language: "javascript",
-    //     stars: "",
-    //     creationDate: "",
-    //     lastUpdate: "",
-    //     keyWords: "",
-    // });
 
     const handleClose = () => {
         closeForm();
