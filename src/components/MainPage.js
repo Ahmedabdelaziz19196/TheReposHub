@@ -9,6 +9,7 @@ import Header from "./Header";
 import axios from "axios";
 import HnadleFilterForms from "../Context/HandleSearchedDate";
 import { subWeeks, subMonths, format } from "date-fns";
+import { debounce } from "lodash";
 
 export default function MainPage() {
     const { darkTheme } = useContext(DarkAndLightTheme);
@@ -79,36 +80,82 @@ export default function MainPage() {
         setContentPerPage(e);
     }
 
-    //request Data From Search Github API
+    // Request Data From GitHub API
     useEffect(() => {
-        if (filterType === "Explore") {
+        const source = axios.CancelToken.source();
+
+        const fetchData = debounce(() => {
+            let params = {
+                q: `created:>2023-01-01`,
+                per_page: contentPerPage,
+                page: pageNumber,
+            };
+
+            if (filterType === "Explore") {
+                params.q = `language:${
+                    apiSearchParams.language || "javascript"
+                } stars:${apiSearchParams.stars || ">=0"} created:>${
+                    repoCreationDate || "2023-01-01"
+                } pushed:>${repoUpdateDate || "2024-01-01"}`;
+                params.sort = "stars";
+                params.order = apiSearchParams.sorting || "desc";
+            } else {
+                switch (filterType) {
+                    case "Trending":
+                        params.sort = "stars";
+                        params.order = "desc";
+                        break;
+                    case "Recently":
+                        params.sort = "updated";
+                        params.order = "desc";
+                        break;
+                    case "Newest":
+                        params.sort = "created";
+                        params.order = "desc";
+                        break;
+                    default:
+                        return;
+                }
+            }
+
             axios
                 .get("https://api.github.com/search/repositories", {
-                    params: {
-                        q: `language:${
-                            apiSearchParams.language || "javascript"
-                        } stars:${apiSearchParams.stars || ">=0"}  created:>${
-                            repoCreationDate || "2023-01-01"
-                        } pushed:>${repoUpdateDate || "2024-01-01"}`,
-                        sort: "stars",
-                        order: `${apiSearchParams.sorting || "desc"}`,
-                        per_page: contentPerPage,
-                        page: pageNumber,
+                    params,
+                    headers: {
+                        Authorization: `Bearer ${process.env.REACT_APP_GITHUB_TOKEN}`,
+                        Accept: "application/vnd.github+json",
                     },
+                    cancelToken: source.token,
                 })
-                .then(function (response) {
+                .then((response) => {
                     setResponsedDate(response.data.items);
                     setTotalResposedDate(response.data.total_count);
                 })
-                .catch(function (error) {
-                    console.log(error);
+                .catch((error) => {
+                    if (axios.isCancel(error)) {
+                        console.log("Request canceled:", error.message);
+                    } else {
+                        console.error("Error fetching data:", error);
+                        if (error.response && error.response.status === 403) {
+                            console.error(
+                                "Rate limit exceeded. Check your GitHub token or try again later."
+                            );
+                        }
+                    }
                 });
-        }
 
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth",
-        });
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth",
+            });
+        }, 500); // تأخير 500 مللي ثانية
+
+        fetchData();
+
+        return () => {
+            fetchData.cancel(); // إلغاء الطلبات المؤجلة
+            source.cancel("Operation canceled by the user.");
+        };
     }, [
         pageNumber,
         contentPerPage,
@@ -117,87 +164,6 @@ export default function MainPage() {
         repoUpdateDate,
         filterType,
     ]);
-    //request Data From Search Github API
-
-    //request filtered topics (trending, newest, recentely updated)
-    useEffect(() => {
-        if (filterType !== "Explore") {
-            switch (filterType) {
-                case "Trending":
-                    axios
-                        .get("https://api.github.com/search/repositories", {
-                            params: {
-                                q: `created:>2023-01-01`,
-                                sort: "stars",
-                                order: `desc`,
-                                per_page: contentPerPage,
-                                page: pageNumber,
-                            },
-                        })
-                        .then(function (response) {
-                            setResponsedDate(response.data.items);
-                            setTotalResposedDate(response.data.total_count);
-                        })
-                        .catch(function (error) {
-                            console.log(error);
-                        });
-                    break;
-                case "Recently":
-                    axios
-                        .get("https://api.github.com/search/repositories", {
-                            params: {
-                                q: `created:>2023-01-01`,
-                                sort: "updated",
-                                order: `desc`,
-                                per_page: contentPerPage,
-                                page: pageNumber,
-                            },
-                        })
-                        .then(function (response) {
-                            setResponsedDate(response.data.items);
-                            setTotalResposedDate(response.data.total_count);
-                        })
-                        .catch(function (error) {
-                            console.log(error);
-                        });
-                    break;
-                case "Newest":
-                    axios
-                        .get("https://api.github.com/search/repositories", {
-                            params: {
-                                q: `created:>2023-01-01`,
-                                sort: "created",
-                                order: `desc`,
-                                per_page: contentPerPage,
-                                page: pageNumber,
-                            },
-                        })
-                        .then(function (response) {
-                            setResponsedDate(response.data.items);
-                            setTotalResposedDate(response.data.total_count);
-                        })
-                        .catch(function (error) {
-                            console.log(error);
-                        });
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth",
-        });
-    }, [
-        pageNumber,
-        contentPerPage,
-        apiSearchParams,
-        repoCreationDate,
-        repoUpdateDate,
-        filterType,
-    ]);
-    //request filtered topics (trending, newest, recentely updated)
 
     return (
         <HnadleFilterForms.Provider
