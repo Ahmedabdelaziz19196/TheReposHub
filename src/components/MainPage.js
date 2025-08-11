@@ -12,6 +12,8 @@ import { subWeeks, subMonths, format } from "date-fns";
 import { debounce } from "lodash";
 import Loading from "./Loading";
 import Error from "./Error";
+import UserRepoCard from "./UserRepoCard";
+import UserPersonalCard from "./UserPersonalCard";
 
 export default function MainPage() {
     const { darkTheme } = useContext(DarkAndLightTheme);
@@ -30,6 +32,9 @@ export default function MainPage() {
     const [filterType, setFilterType] = useState("Explore");
     const [isLoading, setIsLoading] = useState(true);
     const [isError, setIsError] = useState(false);
+    const [userSearch, setUserSearch] = useState("");
+    const [userDate, setUserDate] = useState([]);
+    const [activeTopic, setActiveTopic] = useState(0);
 
     const today = new Date();
     //Set Creating Date
@@ -87,6 +92,7 @@ export default function MainPage() {
     // Request Data From GitHub API
     useEffect(() => {
         setIsLoading(true);
+        setUserDate([]);
 
         const source = axios.CancelToken.source();
 
@@ -147,7 +153,7 @@ export default function MainPage() {
                 top: 0,
                 behavior: "smooth",
             });
-        }, 50);
+        }, 500);
 
         fetchData();
 
@@ -166,6 +172,33 @@ export default function MainPage() {
     ]);
     // Request Data From GitHub API
 
+    // Request User Data From GitHub API
+    useEffect(() => {
+        if (userSearch) {
+            setIsLoading(true);
+            axios
+                .get(`https://api.github.com/users/${userSearch}/repos`, {
+                    per_page: contentPerPage,
+                    page: pageNumber,
+                    headers: {
+                        Authorization: `Bearer ${process.env.REACT_APP_GITHUB_TOKEN}`,
+                        Accept: "application/vnd.github+json",
+                    },
+                })
+                .then((response) => {
+                    setUserDate(response.data);
+                    setTotalResposedDate(response.data.length);
+                    setIsLoading(false);
+                    setUserSearch("");
+                    setActiveTopic("");
+                })
+                .catch(() => {
+                    setIsLoading(false);
+                    setIsError(true);
+                });
+        }
+    }, [userSearch, contentPerPage, pageNumber]);
+    // Request User Data From GitHub API
     return (
         <HnadleFilterForms.Provider
             value={{
@@ -190,7 +223,8 @@ export default function MainPage() {
                     <Header
                         mobileSreach={mobileSreach}
                         handleSreachBar={handleSreachBar}
-                        setSearchBarOffMobile={setSearchBarOffMobile}
+                        setUserSearch={setUserSearch}
+                        setFilterType={setFilterType}
                     />
                     <Divider
                         sx={{
@@ -229,22 +263,50 @@ export default function MainPage() {
                             contentPerPage={contentPerPage}
                             setContentNumberPerPage={setContentNumberPerPage}
                             setFilterType={setFilterType}
+                            filterType={filterType}
+                            activeTopic={activeTopic}
+                            setActiveTopic={setActiveTopic}
                         />
+                    </Container>
+                    <Container
+                        maxWidth={isError ? false : "md"}
+                        className="main-page"
+                        sx={{
+                            height: "calc(100% - 58px)",
+                            position: "relative",
+                        }}
+                        onClick={setSearchBarOffMobile}
+                    >
                         {isError ? (
-                            <div style={{ height: "80vh" }}>
+                            <div style={{ height: "68vh", width: "100wv" }}>
                                 <Error />
                             </div>
                         ) : (
                             <>
-                                <div>
-                                    {responsedDate.map((_, index) => (
-                                        <Card
-                                            key={index}
-                                            responsedDate={responsedDate}
-                                            index={index}
-                                        />
-                                    ))}
-                                </div>
+                                {userDate.length > 0 ? (
+                                    <>
+                                        <UserPersonalCard userDate={userDate} />
+                                        <div>
+                                            {userDate.map((_, index) => (
+                                                <UserRepoCard
+                                                    key={index}
+                                                    userDate={userDate}
+                                                    index={index}
+                                                />
+                                            ))}
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div>
+                                        {responsedDate.map((_, index) => (
+                                            <Card
+                                                key={index}
+                                                responsedDate={responsedDate}
+                                                index={index}
+                                            />
+                                        ))}
+                                    </div>
+                                )}
 
                                 <ThePagination
                                     handlePageNumber={handlePageNumber}

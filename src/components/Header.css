@@ -41,14 +41,22 @@
 .sreach-input {
     transition: 0.3s;
 }
+
 @media (max-width: 768px) {
+    .title {
+        display: block;
+    }
+    .title.clicked {
+        display: none;
+    }
+
     .sreach-input {
         padding: 3px !important;
         width: 32px !important;
     }
     .sreach-input.clicked {
         padding: 10px 10px 10px 30px !important ;
-        width: 175px !important;
+        width: 278px !important;
     }
     .sreach-input.clicked::placeholder {
         color: #5e6369ff;
@@ -61,6 +69,16 @@
         left: 16px !important;
         height: 50%;
         transform: translate(-50%, -50%) !important;
+    }
+
+    .personalRepo-search {
+        opacity: 0;
+        visibility: hidden;
+    }
+    .personalRepo-search.clicked {
+        opacity: 1;
+        visibility: visible;
+        transition: opacity 0.1s ease 0.2s;
     }
 }
 

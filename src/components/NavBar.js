@@ -12,10 +12,11 @@ export default function NavBar({
     contentPerPage,
     setContentNumberPerPage,
     setFilterType,
+    activeTopic,
+    setActiveTopic,
 }) {
     const { darkTheme } = useContext(DarkAndLightTheme);
     const [topic] = useState(["Explore", "Trending", "Recently", "Newest"]);
-    const [activeTopic, setActiveTopic] = useState(0);
     const [showcontentPerPage, setShowcontentPerPage] = useState(false);
     const [formOpen, setFormOpen] = useState(false);
 

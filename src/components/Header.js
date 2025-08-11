@@ -5,14 +5,17 @@ import { faSun } from "@fortawesome/free-solid-svg-icons";
 import { faMoon } from "@fortawesome/free-solid-svg-icons";
 import { useContext, useState } from "react";
 import DarkAndLightTheme from "../Context/DarkAndLight";
+import Button from "@mui/material/Button";
 
 export default function Header({
     mobileSreach,
     handleSreachBar,
-    setSearchBarOffMobile,
+    setUserSearch,
+    setFilterType,
 }) {
     const { darkTheme, handleDarkLightTheme } = useContext(DarkAndLightTheme);
     const [Scrolled, setIsScrolled] = useState(false);
+    const [searchInput, setSearchInput] = useState("");
 
     function handleSreachBarDisplay() {
         if (window.innerWidth < 769) {
@@ -26,6 +29,12 @@ export default function Header({
         setIsScrolled(window.scrollY >= 20 ? true : false);
     }
     window.addEventListener("scroll", handleScroll);
+
+    function handlePersonalRepoSearch() {
+        setUserSearch(searchInput);
+        setSearchInput("");
+        setFilterType("");
+    }
 
     return (
         <div
@@ -61,7 +70,12 @@ export default function Header({
                     alt="logo"
                     className="thelogo"
                 />
-                <p style={{ fontWeight: "bold" }}>ReposHub</p>
+                <p
+                    style={{ fontWeight: "bold" }}
+                    className={`title ${mobileSreach ? "clicked" : ""}`}
+                >
+                    ReposHub
+                </p>
             </div>
             <div
                 style={{
@@ -80,10 +94,12 @@ export default function Header({
                         border: "1px solid #5e6369ff",
                         borderRadius: "10px",
                         padding: "10px  10px 10px 40px ",
-                        width: "200px",
+                        width: "300px",
                         color: "#5e6369ff",
                     }}
                     placeholder="Search..."
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
                 />
                 <SearchIcon
                     style={{
@@ -96,6 +112,26 @@ export default function Header({
                     className={`search-icon ${mobileSreach ? "clicked" : ""}`}
                     onClick={handleSreachBarDisplay}
                 />
+                <Button
+                    sx={{
+                        color: darkTheme
+                            ? "var(--secondry-dark-background)"
+                            : "var(--secondry-light-background)",
+                        background: "rgb(94, 99, 105)",
+                        padding: "10px 0px 7px 0px",
+                        position: "absolute",
+                        right: "47px",
+                        height: "24px",
+                        borderRadius: "6px",
+                        fontSize: "13px",
+                    }}
+                    onClick={handlePersonalRepoSearch}
+                    className={`personalRepo-search ${
+                        mobileSreach ? "clicked" : ""
+                    }`}
+                >
+                    Search
+                </Button>
                 <div
                     style={{
                         color: "#5e6369ff",
