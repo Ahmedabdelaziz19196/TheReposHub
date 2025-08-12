@@ -91,76 +91,77 @@ export default function MainPage() {
 
     // Request Data From GitHub API
     useEffect(() => {
-        setIsLoading(true);
-        setUserDate([]);
+        if (!userSearch) {
+            setIsLoading(true);
+            setUserDate([]);
+            const source = axios.CancelToken.source();
 
-        const source = axios.CancelToken.source();
+            const fetchData = debounce(() => {
+                let params = {
+                    q: `created:>2023-01-01`,
+                    per_page: contentPerPage,
+                    page: pageNumber,
+                };
 
-        const fetchData = debounce(() => {
-            let params = {
-                q: `created:>2023-01-01`,
-                per_page: contentPerPage,
-                page: pageNumber,
-            };
-
-            if (filterType === "Explore") {
-                params.q = `language:${
-                    apiSearchParams.language || "javascript"
-                } stars:${apiSearchParams.stars || ">=0"} created:>${
-                    repoCreationDate || "2023-01-01"
-                } pushed:>${repoUpdateDate || "2024-01-01"}`;
-                params.sort = "stars";
-                params.order = apiSearchParams.sorting || "desc";
-            } else {
-                switch (filterType) {
-                    case "Trending":
-                        params.sort = "stars";
-                        params.order = "desc";
-                        break;
-                    case "Recently":
-                        params.sort = "updated";
-                        params.order = "desc";
-                        break;
-                    case "Newest":
-                        params.sort = "created";
-                        params.order = "desc";
-                        break;
-                    default:
-                        return;
+                if (filterType === "Explore") {
+                    params.q = `language:${
+                        apiSearchParams.language || "javascript"
+                    } stars:${apiSearchParams.stars || ">=0"} created:>${
+                        repoCreationDate || "2023-01-01"
+                    } pushed:>${repoUpdateDate || "2024-01-01"}`;
+                    params.sort = "stars";
+                    params.order = apiSearchParams.sorting || "desc";
+                } else {
+                    switch (filterType) {
+                        case "Trending":
+                            params.sort = "stars";
+                            params.order = "desc";
+                            break;
+                        case "Recently":
+                            params.sort = "updated";
+                            params.order = "desc";
+                            break;
+                        case "Newest":
+                            params.sort = "created";
+                            params.order = "desc";
+                            break;
+                        default:
+                            return;
+                    }
                 }
-            }
 
-            axios
-                .get("https://api.github.com/search/repositories", {
-                    params,
-                    headers: {
-                        Authorization: `Bearer ${process.env.REACT_APP_GITHUB_TOKEN}`,
-                        Accept: "application/vnd.github+json",
-                    },
-                    cancelToken: source.token,
-                })
-                .then((response) => {
-                    setResponsedDate(response.data.items);
-                    setTotalResposedDate(response.data.total_count);
-                    setIsLoading(false);
-                })
-                .catch(() => {
-                    setIsLoading(false);
-                    setIsError(true);
+                axios
+                    .get("https://api.github.com/search/repositories", {
+                        params,
+                        headers: {
+                            Authorization: `Bearer ${process.env.REACT_APP_GITHUB_TOKEN}`,
+                            Accept: "application/vnd.github+json",
+                        },
+                        cancelToken: source.token,
+                    })
+                    .then((response) => {
+                        setResponsedDate(response.data.items);
+                        setTotalResposedDate(response.data.total_count);
+                        setIsLoading(false);
+                    })
+                    .catch(() => {
+                        setIsLoading(false);
+                        setIsError(true);
+                    });
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth",
                 });
+            }, 500);
 
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth",
-            });
-        }, 500);
+            fetchData();
 
-        fetchData();
-
-        return () => {
-            fetchData.cancel();
-            source.cancel();
-        };
+            return () => {
+                fetchData.cancel();
+                source.cancel();
+            };
+        }
     }, [
         pageNumber,
         contentPerPage,
@@ -169,6 +170,7 @@ export default function MainPage() {
         repoUpdateDate,
         filterType,
         isError,
+        userSearch,
     ]);
     // Request Data From GitHub API
 
@@ -176,10 +178,26 @@ export default function MainPage() {
     useEffect(() => {
         if (userSearch) {
             setIsLoading(true);
+
+            // Call 1: Get total repos count
+            axios
+                .get(`https://api.github.com/users/${userSearch}`, {
+                    headers: {
+                        Authorization: `Bearer ${process.env.REACT_APP_GITHUB_TOKEN}`,
+                        Accept: "application/vnd.github+json",
+                    },
+                })
+                .then((res) => {
+                    setTotalResposedDate(res.data.public_repos);
+                });
+
+            // Call 2: Get repos for current page
             axios
                 .get(`https://api.github.com/users/${userSearch}/repos`, {
-                    per_page: contentPerPage,
-                    page: pageNumber,
+                    params: {
+                        per_page: contentPerPage,
+                        page: pageNumber,
+                    },
                     headers: {
                         Authorization: `Bearer ${process.env.REACT_APP_GITHUB_TOKEN}`,
                         Accept: "application/vnd.github+json",
@@ -187,18 +205,26 @@ export default function MainPage() {
                 })
                 .then((response) => {
                     setUserDate(response.data);
-                    setTotalResposedDate(response.data.length);
                     setIsLoading(false);
-                    setUserSearch("");
                     setActiveTopic("");
                 })
                 .catch(() => {
                     setIsLoading(false);
                     setIsError(true);
                 });
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth",
+            });
         }
     }, [userSearch, contentPerPage, pageNumber]);
+
     // Request User Data From GitHub API
+    console.log("user search is" + userSearch);
+    console.log(contentPerPage);
+    console.log(pageNumber);
+    console.log(totalResposedDate);
+
     return (
         <HnadleFilterForms.Provider
             value={{
@@ -266,6 +292,7 @@ export default function MainPage() {
                             filterType={filterType}
                             activeTopic={activeTopic}
                             setActiveTopic={setActiveTopic}
+                            setUserSearch={setUserSearch}
                         />
                     </Container>
                     <Container

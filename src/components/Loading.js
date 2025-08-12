@@ -15,7 +15,13 @@ export default function Loading() {
         // >
 
         // </div>
-        <Box sx={{ width: "100%", position: "relative", top: "57px" }}>
+        <Box
+            sx={{
+                width: "100%",
+                position: "relative",
+                top: "57px",
+            }}
+        >
             <LinearProgress />
         </Box>
     );

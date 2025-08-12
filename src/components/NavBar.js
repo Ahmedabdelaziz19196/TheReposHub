@@ -14,6 +14,7 @@ export default function NavBar({
     setFilterType,
     activeTopic,
     setActiveTopic,
+    setUserSearch,
 }) {
     const { darkTheme } = useContext(DarkAndLightTheme);
     const [topic] = useState(["Explore", "Trending", "Recently", "Newest"]);
@@ -78,6 +79,7 @@ export default function NavBar({
                             onClick={(e) => {
                                 setActiveTopic(index);
                                 setFilterType(e.target.textContent);
+                                setUserSearch("");
                             }}
                         >
                             {ele}
