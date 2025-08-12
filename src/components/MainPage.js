@@ -1,6 +1,7 @@
 import Container from "@mui/material/Container";
 import Divider from "@mui/material/Divider";
 import { useContext, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import DarkAndLightTheme from "../Context/DarkAndLight";
 import NavBar from "./NavBar";
 import Card from "./Cards";
@@ -16,22 +17,31 @@ import UserPersonalCard from "./UserPersonalCard";
 
 export default function MainPage() {
     const { darkTheme } = useContext(DarkAndLightTheme);
+    const [searchParams, setSearchParams] = useSearchParams();
     const [mobileSreach, isMobileSearch] = useState(false);
-    const [pageNumber, setPageNumber] = useState(1);
+    const [pageNumber, setPageNumber] = useState(
+        parseInt(searchParams.get("page") || "1")
+    );
     const [responsedDate, setResponsedDate] = useState([]);
     const [totalResposedDate, setTotalResposedDate] = useState(0);
-    const [contentPerPage, setContentPerPage] = useState("10");
+    const [contentPerPage, setContentPerPage] = useState(
+        searchParams.get("per_page") || "10"
+    );
     const [apiSearchParams, setApiSearchParams] = useState({
-        language: "javascript",
-        stars: "",
-        creationDate: "",
-        lastUpdate: "",
-        sorting: "",
+        language: searchParams.get("language") || "javascript",
+        stars: searchParams.get("stars") || ">=0",
+        creationDate: searchParams.get("created") || "",
+        lastUpdate: searchParams.get("updated") || "",
+        sorting: searchParams.get("sorting") || "desc",
     });
-    const [filterType, setFilterType] = useState("Explore");
+    const [filterType, setFilterType] = useState(
+        searchParams.get("filter") || "Explore"
+    );
     const [isLoading, setIsLoading] = useState(true);
     const [isError, setIsError] = useState(false);
-    const [userSearch, setUserSearch] = useState("");
+    const [userSearch, setUserSearch] = useState(
+        searchParams.get("user") || ""
+    );
     const [userDate, setUserDate] = useState([]);
     const [activeTopic, setActiveTopic] = useState(0);
 
@@ -87,6 +97,50 @@ export default function MainPage() {
     function setContentNumberPerPage(e) {
         setContentPerPage(e);
     }
+
+    //sync between state and url
+    useEffect(() => {
+        if (userSearch) {
+            setSearchParams({
+                user: userSearch,
+            });
+        } else {
+            setSearchParams({
+                page: pageNumber.toString(),
+                per_page: contentPerPage,
+                filter: filterType,
+                language: apiSearchParams.language,
+                stars: apiSearchParams.stars,
+                sorting: apiSearchParams.sorting,
+                created: apiSearchParams.creationDate || "2023-01-01",
+                updated: apiSearchParams.lastUpdate || "2024-01-01",
+            });
+        }
+    }, [
+        pageNumber,
+        contentPerPage,
+        filterType,
+        userSearch,
+        apiSearchParams,
+        setSearchParams,
+    ]);
+    //sync between state and url
+
+    //sync between URL and State
+    useEffect(() => {
+        setPageNumber(parseInt(searchParams.get("page") || "1"));
+        setContentPerPage(searchParams.get("per_page") || "10");
+        setFilterType(searchParams.get("filter") || "Explore");
+        setUserSearch(searchParams.get("user") || "");
+        setApiSearchParams({
+            language: searchParams.get("language") || "javascript",
+            stars: searchParams.get("stars") || ">=0",
+            creationDate: searchParams.get("created") || "",
+            lastUpdate: searchParams.get("updated") || "",
+            sorting: searchParams.get("sorting") || "desc",
+        });
+    }, [searchParams]);
+    //sync between URL and State
 
     // Request Data From GitHub API
     useEffect(() => {
