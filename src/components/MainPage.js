@@ -10,7 +10,6 @@ import axios from "axios";
 import HnadleFilterForms from "../Context/HandleSearchedDate";
 import { subWeeks, subMonths, format } from "date-fns";
 import { debounce } from "lodash";
-import Loading from "./Loading";
 import Error from "./Error";
 import UserRepoCard from "./UserRepoCard";
 import UserPersonalCard from "./UserPersonalCard";
@@ -251,6 +250,7 @@ export default function MainPage() {
                         handleSreachBar={handleSreachBar}
                         setUserSearch={setUserSearch}
                         setFilterType={setFilterType}
+                        isLoading={isLoading}
                     />
                     <Divider
                         sx={{
@@ -270,21 +270,6 @@ export default function MainPage() {
                         }}
                         onClick={setSearchBarOffMobile}
                     >
-                        {isLoading ? (
-                            <div
-                                style={{
-                                    position: "fixed    ",
-                                    top: "0px",
-                                    left: "0px",
-                                    width: "100%",
-                                }}
-                            >
-                                <Loading />
-                            </div>
-                        ) : (
-                            ""
-                        )}
-
                         <NavBar
                             contentPerPage={contentPerPage}
                             setContentNumberPerPage={setContentNumberPerPage}
