@@ -219,10 +219,6 @@ export default function MainPage() {
     }, [userSearch, contentPerPage, pageNumber]);
 
     // Request User Data From GitHub API
-    console.log("user search is" + userSearch);
-    console.log(contentPerPage);
-    console.log(pageNumber);
-    console.log(totalResposedDate);
 
     return (
         <HnadleFilterForms.Provider

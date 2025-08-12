@@ -3,6 +3,8 @@ import "./App.css";
 import Splashscreen from "./components/SplashScreen";
 import MainPage from "./components/MainPage";
 import DarkAndLightTheme from "./Context/DarkAndLight";
+import { BrowserRouter } from "react-router-dom";
+
 function App() {
     const [darkTheme, setDarkMode] = useState(true);
     const [spashScreen, isSplashScreen] = useState(true);
@@ -32,11 +34,13 @@ function App() {
 
     return (
         <>
-            <DarkAndLightTheme.Provider
-                value={{ darkTheme, handleDarkLightTheme }}
-            >
-                {spashScreen ? <Splashscreen /> : <MainPage />}
-            </DarkAndLightTheme.Provider>
+            <BrowserRouter>
+                <DarkAndLightTheme.Provider
+                    value={{ darkTheme, handleDarkLightTheme }}
+                >
+                    {spashScreen ? <Splashscreen /> : <MainPage />}
+                </DarkAndLightTheme.Provider>
+            </BrowserRouter>
         </>
     );
 }

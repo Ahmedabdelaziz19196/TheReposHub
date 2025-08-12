@@ -33,9 +33,20 @@ export default function Header({
     window.addEventListener("scroll", handleScroll);
 
     function handlePersonalRepoSearch() {
-        setUserSearch(searchInput);
-        setSearchInput("");
-        setFilterType("");
+        if (searchInput) {
+            setUserSearch(searchInput);
+            setSearchInput("");
+            setFilterType("");
+        }
+    }
+    function handleEnterFormSearch(e) {
+        if (e.key === "Enter") {
+            handlePersonalRepoSearch();
+        }
+    }
+
+    function handleReload() {
+        window.location.reload();
     }
 
     return (
@@ -60,6 +71,7 @@ export default function Header({
                         gap: "5px   ",
                         cursor: "pointer",
                     }}
+                    onClick={handleReload}
                 >
                     <img
                         src={
@@ -102,6 +114,7 @@ export default function Header({
                         placeholder="Search..."
                         value={searchInput}
                         onChange={(e) => setSearchInput(e.target.value)}
+                        onKeyDown={handleEnterFormSearch}
                     />
                     <SearchIcon
                         style={{
