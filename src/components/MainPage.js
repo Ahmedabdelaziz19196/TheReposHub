@@ -29,10 +29,10 @@ export default function MainPage() {
     );
     const [apiSearchParams, setApiSearchParams] = useState({
         language: searchParams.get("language") || "javascript",
-        stars: searchParams.get("stars") || ">=0",
+        stars: searchParams.get("stars") || "",
         creationDate: searchParams.get("created") || "",
         lastUpdate: searchParams.get("updated") || "",
-        sorting: searchParams.get("sorting") || "desc",
+        sorting: searchParams.get("sorting") || "",
     });
     const [filterType, setFilterType] = useState(
         searchParams.get("filter") || "Explore"
@@ -114,8 +114,8 @@ export default function MainPage() {
                 language: apiSearchParams.language,
                 stars: apiSearchParams.stars,
                 sorting: apiSearchParams.sorting,
-                created: apiSearchParams.creationDate || "2023-01-01",
-                updated: apiSearchParams.lastUpdate || "2024-01-01",
+                created: apiSearchParams.creationDate,
+                updated: apiSearchParams.lastUpdate,
                 topic: activeTopic.toString(),
             });
         }
@@ -138,10 +138,10 @@ export default function MainPage() {
         setUserSearch(searchParams.get("user") || "");
         setApiSearchParams({
             language: searchParams.get("language") || "javascript",
-            stars: searchParams.get("stars") || ">=0",
+            stars: searchParams.get("stars") || "",
             creationDate: searchParams.get("created") || "",
             lastUpdate: searchParams.get("updated") || "",
-            sorting: searchParams.get("sorting") || "desc",
+            sorting: searchParams.get("sorting") || "",
         });
         setActiveTopic(parseInt(searchParams.get("topic") || 0));
     }, [searchParams]);
