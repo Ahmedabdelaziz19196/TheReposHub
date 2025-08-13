@@ -34,7 +34,7 @@ export default function Header({
 
     function handlePersonalRepoSearch() {
         if (searchInput) {
-            setUserSearch(searchInput);
+            setUserSearch(searchInput.trim());
             setSearchInput("");
             setFilterType("");
         }
