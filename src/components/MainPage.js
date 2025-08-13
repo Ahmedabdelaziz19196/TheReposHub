@@ -43,7 +43,9 @@ export default function MainPage() {
         searchParams.get("user") || ""
     );
     const [userDate, setUserDate] = useState([]);
-    const [activeTopic, setActiveTopic] = useState(0);
+    const [activeTopic, setActiveTopic] = useState(
+        searchParams.get("topic") || 0
+    );
 
     const today = new Date();
     //Set Creating Date
@@ -114,6 +116,7 @@ export default function MainPage() {
                 sorting: apiSearchParams.sorting,
                 created: apiSearchParams.creationDate || "2023-01-01",
                 updated: apiSearchParams.lastUpdate || "2024-01-01",
+                topic: activeTopic.toString(),
             });
         }
     }, [
@@ -123,6 +126,7 @@ export default function MainPage() {
         userSearch,
         apiSearchParams,
         setSearchParams,
+        activeTopic,
     ]);
     //sync between state and url
 
@@ -139,6 +143,7 @@ export default function MainPage() {
             lastUpdate: searchParams.get("updated") || "",
             sorting: searchParams.get("sorting") || "desc",
         });
+        setActiveTopic(parseInt(searchParams.get("topic") || 0));
     }, [searchParams]);
     //sync between URL and State
 
