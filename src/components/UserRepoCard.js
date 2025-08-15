@@ -4,7 +4,7 @@ import "./Card.css";
 import Button from "@mui/material/Button";
 import DarkAndLightTheme from "../Context/DarkAndLight";
 import { useContext } from "react";
-export default function UserRepoCard({ index, userDate }) {
+export default function UserRepoCard({ index, userDate, totalResposedDate }) {
     const { darkTheme } = useContext(DarkAndLightTheme);
     return (
         <>
@@ -34,7 +34,6 @@ export default function UserRepoCard({ index, userDate }) {
                     className="repo-info"
                     style={{
                         width: "100%",
-                        // padding: "0px",
                     }}
                 >
                     <div className="repo-name-id">

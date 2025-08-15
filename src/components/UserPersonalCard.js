@@ -1,9 +1,8 @@
 import Button from "@mui/material/Button";
 import DarkAndLightTheme from "../Context/DarkAndLight";
 import { useContext } from "react";
-export default function UserPersonalCard(userDate) {
+export default function UserPersonalCard({ userDate }) {
     const { darkTheme } = useContext(DarkAndLightTheme);
-
     return (
         <>
             <div
@@ -37,17 +36,17 @@ export default function UserPersonalCard(userDate) {
                 >
                     <div className="image-name">
                         <a
-                            href={userDate.userDate[0].owner.html_url}
+                            href={userDate[0].owner.html_url}
                             target="_blank"
                             rel="noopener noreferrer"
                         >
                             <img
-                                src={userDate.userDate[0].owner.avatar_url}
+                                src={userDate[0].owner.avatar_url}
                                 alt="Profile"
                             />
                         </a>
                         <div className="name">
-                            <h4>{userDate.userDate[0].owner.login}</h4>
+                            <h4>{userDate[0].owner.login}</h4>
                             <p
                                 style={{
                                     fontSize: "12px",
@@ -56,14 +55,24 @@ export default function UserPersonalCard(userDate) {
                                         : "1px solid #d1d9e0",
                                 }}
                             >
-                                id:{userDate.userDate[0].owner.id}
+                                id:{userDate[0].owner.id}
+                            </p>
+                            <p
+                                style={{
+                                    fontSize: "12px",
+                                    color: darkTheme
+                                        ? "1px solid #3d444d"
+                                        : "1px solid #d1d9e0",
+                                }}
+                            >
+                                Total: {userDate.length}
                             </p>
                         </div>
                     </div>
                     <div>
                         <Button
                             component="a"
-                            href={userDate.userDate[0].owner.html_url}
+                            href={userDate[0].owner.html_url}
                             target="_blank"
                             sx={{
                                 transition: "0.2s",
