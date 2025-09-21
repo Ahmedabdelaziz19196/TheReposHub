@@ -202,7 +202,8 @@ export default function MainPage() {
                         setTotalResposedDate(response.data.total_count);
                         setIsLoading(false);
                     })
-                    .catch(() => {
+                    .catch((error) => {
+                        console.log(error);
                         setIsLoading(false);
                         setIsError(true);
                     });
